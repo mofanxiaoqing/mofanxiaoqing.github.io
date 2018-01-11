@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>winni-jane的技术博客</title>
+
+<meta charset="utf-8">
+
+<script src="//apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+
+<script src="//apps.bdimg.com/libs/angular-route/1.3.13/angular-route.js"></script>
+
+
+
+</head>
+
+<body>
+
+
+
+<div ng-app="myApp"> 
+
+
+
+<div> 
+
+<div id="navigation"> 
+
+<a href="#/home">Home</a>
+
+<a href="#/about">About</a>
+
+</div>
+
+
+
+<div ng-view="">
+
+</div>
+
+</div>
+
+
+
+<script type="text/ng-template" id="embedded.home.html">
+
+<ul>
+
+<li ng-repeat="x in list">
+
+<a href="#/info:{{x.download_url}}" target="_blank"> {{ x.name }} </a>
+
+</li>
+
+</ul>
+
+</script>
+
+
+
+
+
+<script type="text/ng-template" id="embedded.info.html">
+
+<div>
+
+this is my blog info : {{content}}
+
+</div>
+
+</script>
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+<script>
+
+var app = angular.module('myApp', ['ngRoute']);
+
+
+
+app.controller('HomeController', function ($scope, $route, $http) { 
+
+$scope.$route = $route;
+
+$http.get("https://api.github.com/repos/winni-jane/winni-jane.github.com/contents/source?ref=master")
+
+.success(function (response) {$scope.list= response;});
+
+});
+
+
+
+app.controller('InfoController', function ($scope, $route) { 
+
+$scope.$route = $route;
+
+
+
+$http.get($scope.download_url)
+
+.success(function (response) {$scope.content= response;});
+
+});
+
+
+
+app.config(function ($routeProvider) {
+
+$routeProvider.
+
+when('/home', {
+
+templateUrl: 'embedded.home.html',
+
+controller: 'HomeController'
+
+}).
+
+when('/info:download_url', {
+
+templateUrl: 'embedded.info.html',
+
+controller: 'InfoController'
+
+}).
+
+otherwise({
+
+redirectTo: '/home'
+
+});
+
+});
+
+</script>
